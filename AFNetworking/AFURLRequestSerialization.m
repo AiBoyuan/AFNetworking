@@ -1259,21 +1259,27 @@ typedef enum {
             [mutableRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
         }
 
-        if (![NSJSONSerialization isValidJSONObject:parameters]) {
-            if (error) {
-                NSDictionary *userInfo = @{NSLocalizedFailureReasonErrorKey: NSLocalizedStringFromTable(@"The `parameters` argument is not valid JSON.", @"AFNetworking", nil)};
-                *error = [[NSError alloc] initWithDomain:AFURLRequestSerializationErrorDomain code:NSURLErrorCannotDecodeContentData userInfo:userInfo];
-            }
-            return nil;
-        }
+//        if (![NSJSONSerialization isValidJSONObject:parameters]) {
+//            if (error) {
+//                NSDictionary *userInfo = @{NSLocalizedFailureReasonErrorKey: NSLocalizedStringFromTable(@"The `parameters` argument is not valid JSON.", @"AFNetworking", nil)};
+//                *error = [[NSError alloc] initWithDomain:AFURLRequestSerializationErrorDomain code:NSURLErrorCannotDecodeContentData userInfo:userInfo];
+//            }
+//            return nil;
+//        }
 
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:parameters options:self.writingOptions error:error];
-        
-        if (!jsonData) {
-            return nil;
+        if ([parameters isKindOfClass:[NSString class]]) {
+            [mutableRequest setHTTPBody:[parameters dataUsingEncoding:NSUTF8StringEncoding]];
+        }else{
+            [mutableRequest setHTTPBody:[NSJSONSerialization dataWithJSONObject:parameters options:self.writingOptions error:error]];
         }
         
-        [mutableRequest setHTTPBody:jsonData];
+//        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:parameters options:self.writingOptions error:error];
+//
+//        if (!jsonData) {
+//            return nil;
+//        }
+//
+//        [mutableRequest setHTTPBody:jsonData];
     }
 
     return mutableRequest;
